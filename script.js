@@ -32,7 +32,34 @@ to:
 
 operationButtons.forEach(button => {
     button.addEventListener('click', () => {
-        display.textContent += button.textContent;
+        
+        
+       
+        switch(button.textContent) {
+            case 'X':
+                display.textContent += '*';
+            
+                break;
+            case '%':
+             
+            parseInt(display.textContent = display.textContent / 100);  
+                break;
+            
+            case ',':
+                display.textContent += '.';
+                break;
+            
+            
+            default:
+                display.textContent += button.textContent;
+                break;
+            
+                
+        }
+            
+
+        
     })
 })
+
 
