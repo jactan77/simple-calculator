@@ -13,22 +13,17 @@ numberButtons.forEach(button => {
 
 clearButton.addEventListener('click', () => {
     display.textContent = '';
+
+
 })
 
 equalButton.addEventListener('click', () => {
-    display.textContent = eval(display.textContent); // Wymyśleć coś alternatywnego
+    let result = eval(display.textContent);
+    result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(9) : display.textContent = result;
+
 });
 
-// ^^^^^^^^^^^^
-/* 
-w
-Gdy wykonuje operację, typu np. 7X9
-to: 
-[NEW] Explain Console errors by using Copilot in Edge: click 
-         to explain an error.
 
-         Chcemy, aby X był traktowany jako "*", że
-*/
 
 operationButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -48,7 +43,9 @@ operationButtons.forEach(button => {
             case ',':
                 display.textContent += '.';
                 break;
-            
+            case '+/-':
+                display.textContent = display.textContent * -1;
+                break;
             
             default:
                 display.textContent += button.textContent;
