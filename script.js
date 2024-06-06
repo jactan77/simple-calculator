@@ -3,26 +3,25 @@ const operationButtons = document.querySelectorAll('[data-operation]');
 const equalButton = document.querySelector('[data-equals]'); 
 const clearButton = document.querySelector('[data-delete]');
 const display = document.querySelector("#display");
+let memory = null 
 
 
 numberButtons.forEach(button => {
     button.addEventListener('click', () => {
+        
         display.textContent += button.textContent;
+        memory += parseInt(button.textContent)
     });
+        
 }); 
+    
+    
+    
 
 clearButton.addEventListener('click', () => {
     display.textContent = '';
-
-
+    memory =  null;
 })
-
-equalButton.addEventListener('click', () => {
-    let result = eval(display.textContent);
-    result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(9) : display.textContent = result;
-
-});
-
 
 
 operationButtons.forEach(button => {
@@ -32,31 +31,55 @@ operationButtons.forEach(button => {
        
         switch(button.textContent) {
             case 'X':
-                display.textContent += '*';
-            
+                display.textContent = '';
+                memory += "*"
                 break;
             case '%':
-             
-            parseInt(display.textContent = display.textContent / 100);  
-                break;
-            
+                display.textContent = display.textContent / 100 
+                memory = display.textContent;
+                break;            
+                               
             case ',':
                 display.textContent += '.';
+                memory += '.';
                 break;
             case '+/-':
                 display.textContent = display.textContent * -1;
+                memory = display.textContent
                 break;
             
-            default:
-                display.textContent += button.textContent;
-                break;
+            case '+':
+                display.textContent = " ";
+                memory += "+"
             
+            case '-':
+                display.textContent = " ";
                 
-        }
+                memory += "-"
+                break;
+            case '/':
+                display.textContent = " ";
+                memory += "/"
+                break;
+           }
             
 
         
     })
+})     
+            
+
+                
+            
+            
+        
+
+equalButton.addEventListener('click', () => {
+    let result = eval(memory);
+    result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(9) : display.textContent = result;
+    memory = null;
+    
 })
+
 
 
