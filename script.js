@@ -3,12 +3,12 @@ const operationButtons = document.querySelectorAll('[data-operation]');
 const equalButton = document.querySelector('[data-equals]'); 
 const clearButton = document.querySelector('[data-delete]');
 const display = document.querySelector("#display");
-let memory = null 
-
+let memory = null; 
+let memoryUsage = null;
 
 numberButtons.forEach(button => {
     button.addEventListener('click', () => {
-        
+        clearButton.textContent = 'C';
         display.textContent += button.textContent;
         memory += parseInt(button.textContent)
     });
@@ -19,6 +19,7 @@ numberButtons.forEach(button => {
     
 
 clearButton.addEventListener('click', () => {
+    clearButton.textContent = "AC"
     display.textContent = '';
     memory =  null;
 })
@@ -31,21 +32,24 @@ operationButtons.forEach(button => {
        
         switch(button.textContent) {
             case 'X':
+                memoryUsage = eval(memory)
+                memory = null
                 display.textContent = '';
-                memory += "*"
+                memory =  memoryUsage + '*' 
                 break;
             case '%':
-                display.textContent = display.textContent / 100 
-                memory = display.textContent;
-                break;            
-                               
+                memoryUsage = eval(memory) * 0.01
+                display.textContent = display.textContent / 100
+                memory = memoryUsage
+                break; 
             case ',':
                 display.textContent += '.';
                 memory += '.';
-                break;
+                break
             case '+/-':
-                display.textContent = display.textContent * -1;
-                memory = display.textContent
+                memoryUsage = eval(memory) * -1;
+                display.textContent = display.textContent * -1; 
+                memory = memoryUsage;
                 break;
             
             case '+':
@@ -77,7 +81,7 @@ operationButtons.forEach(button => {
 equalButton.addEventListener('click', () => {
     let result = eval(memory);
     result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(9) : display.textContent = result;
-    memory = null;
+    memory = result;
     
 })
 
