@@ -5,11 +5,11 @@ const clearButton = document.querySelector('[data-delete]');
 const display = document.querySelector("#display");
 let memory = null; 
 let memoryUsage = null;
-
+display.textContent = "0"
 numberButtons.forEach(button => {
     button.addEventListener('click', () => {
         clearButton.textContent = 'C';
-        display.textContent += button.textContent;
+        display.textContent == "0" ? display.textContent = button.textContent : display.textContent += button.textContent
         memory += parseInt(button.textContent)
     });
         
@@ -20,7 +20,7 @@ numberButtons.forEach(button => {
 
 clearButton.addEventListener('click', () => {
     clearButton.textContent = "AC"
-    display.textContent = '';
+    display.textContent = '0';
     memory = memoryUsage = null;
     
 })
