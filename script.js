@@ -21,7 +21,8 @@ numberButtons.forEach(button => {
 clearButton.addEventListener('click', () => {
     clearButton.textContent = "AC"
     display.textContent = '';
-    memory =  null;
+    memory = memoryUsage = null;
+    
 })
 
 
@@ -55,17 +56,17 @@ operationButtons.forEach(button => {
             case '+':
                 display.textContent = " ";
                 memory += "+"
-            
+                break;
             case '-':
                 display.textContent = " ";
-                
                 memory += "-"
                 break;
-            case '/':
+            case '/':    
                 display.textContent = " ";
                 memory += "/"
-                break;
-           }
+                break;        
+               }    
+                
             
 
         
@@ -80,10 +81,8 @@ operationButtons.forEach(button => {
 
 equalButton.addEventListener('click', () => {
     let result = eval(memory);
-    result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(9) : display.textContent = result;
+    result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(7) : display.textContent = result;
     memory = result;
     
 })
-
-
 
