@@ -5,12 +5,29 @@ const clearButton = document.querySelector('[data-delete]');
 const display = document.querySelector("#display");
 let memory = null; 
 let memoryUsage = null;
+let result = null;
 display.textContent = "0"
+
+
 numberButtons.forEach(button => {
     button.addEventListener('click', () => {
         clearButton.textContent = 'C';
-        display.textContent == "0" ? display.textContent = button.textContent : display.textContent += button.textContent
+    if  (display.textContent == "0" || result == memory) {
+        
+        display.textContent = button.textContent
+        memory = parseInt(button.textContent)
+    
+    }   
+    else {
+
+        display.textContent += button.textContent
         memory += parseInt(button.textContent)
+    }
+    
+        
+        
+        
+        
     });
         
 }); 
@@ -80,9 +97,9 @@ operationButtons.forEach(button => {
         
 
 equalButton.addEventListener('click', () => {
-    let result = eval(memory);
+    result = eval(memory);
     result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(7) : display.textContent = result;
-    memory = result;
+    result = memory
     
 })
 
