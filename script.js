@@ -18,6 +18,11 @@ numberButtons.forEach(button => {
         memory = parseInt(button.textContent)
     
     }   
+    else if (memory == "Syntax error") {
+        display.textContent += ""
+    }
+    
+    
     else {
 
         display.textContent += button.textContent
@@ -47,7 +52,7 @@ operationButtons.forEach(button => {
     button.addEventListener('click', () => {
         
         
-       
+    if(memory !== "Syntax error") { 
         switch(button.textContent) {
             case 'X':
                 memoryUsage = eval(memory)
@@ -83,7 +88,10 @@ operationButtons.forEach(button => {
                 memory += "/"
                 break;        
                }    
-                
+            } else{
+                display.textContent += ""
+            } 
+              
             
 
         
@@ -97,9 +105,15 @@ operationButtons.forEach(button => {
         
 
 equalButton.addEventListener('click', () => {
+   try {
     result = eval(memory);
     result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(7) : display.textContent = result;
     result = memory
+   }
+   catch (err) {
+    display.textContent = "Syntax error"
+    memory = "Syntax error"
+   }
     
 })
 
