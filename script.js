@@ -66,9 +66,21 @@ operationButtons.forEach(button => {
                 memory = memoryUsage
                 break; 
             case ',':
-                display.textContent += '.';
-                memory += '.';
-                break
+             if (memory !== result && display.textContent !== '' ) {
+                 display.textContent += '.';
+                 memory += '.';
+                
+            }  else if (memory !== result && display.textContent == '' ) {
+                display.textContent = "0."
+                memory += '0.'
+            }
+                
+            else {
+                    display.textContent = "0"
+                    result = null;
+                    memory = "0"
+                    }
+                break; 
             case '+/-':
                 memoryUsage = eval(memory) * -1;
                 display.textContent = display.textContent * -1; 
