@@ -43,7 +43,7 @@ numberButtons.forEach(button => {
 clearButton.addEventListener('click', () => {
     clearButton.textContent = "AC"
     display.textContent = '0';
-    memory = memoryUsage = null;
+    memory = memoryUsage = result = null;
     
 })
 
@@ -52,7 +52,7 @@ operationButtons.forEach(button => {
     button.addEventListener('click', () => {
         
         
-    if(memory !== "Syntax error") { 
+    if(memory !== "Syntax error" ) { 
         switch(button.textContent) {
             case 'X':
                 memoryUsage = eval(memory)
@@ -73,8 +73,11 @@ operationButtons.forEach(button => {
             }  else if (memory !== result && display.textContent == '' ) {
                 display.textContent = "0."
                 memory += '0.'
-            }
-                
+            } else if (memory == result && display.textContent == '0') {
+                display.textContent = "0."
+                memory = '0.'
+            }   
+            
             else {
                     display.textContent = "0"
                     result = null;
@@ -112,10 +115,6 @@ operationButtons.forEach(button => {
             
 
                 
-            
-            
-        
-
 equalButton.addEventListener('click', () => {
    try {
     result = eval(memory);
