@@ -91,16 +91,22 @@ operationButtons.forEach(button => {
                 break;
             
             case '+':
-                display.textContent = " ";
-                memory += "+"
+                memoryUsage = eval(memory)
+                memory = null
+                display.textContent = '';
+                memory =  memoryUsage + '+' 
                 break;
             case '-':
-                display.textContent = " ";
-                memory += "-"
+                memoryUsage = eval(memory)
+                memory = null
+                display.textContent = '';
+                memory =  memoryUsage + '-' 
                 break;
             case '/':    
-                display.textContent = " ";
-                memory += "/"
+                memoryUsage = eval(memory)
+                memory = null
+                display.textContent = '';
+                memory =  memoryUsage + '/' 
                 break;        
                }    
             } else{
