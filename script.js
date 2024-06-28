@@ -122,15 +122,16 @@ operationButtons.forEach(button => {
 
                 
 equalButton.addEventListener('click', () => {
-   try {
-    result = eval(memory);
-    result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(7) : display.textContent = result;
-    result = memory
-   }
-   catch (err) {
-    display.textContent = "Syntax error"
-    memory = "Syntax error"
-   }
-    
-})
-
+    try {
+        result = eval(memory);
+        result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(7) : display.textContent = result;
+        result = memory;
+        display.classList.add('adding-text'); // Add class for animation
+        setTimeout(() => {
+            display.classList.remove('adding-text');
+        }, 300); // Adjust timing as needed
+    } catch (err) {
+        display.textContent = "Syntax error";
+        memory = "Syntax error";
+    }
+});
