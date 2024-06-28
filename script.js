@@ -15,7 +15,7 @@ numberButtons.forEach(button => {
     if  (display.textContent == "0" || result == memory) {
         
         display.textContent = button.textContent
-        memory = parseInt(button.textContent)
+        memory = button.textContent
     
     }   
     else if (memory == "Syntax error") {
@@ -26,7 +26,7 @@ numberButtons.forEach(button => {
     else {
 
         display.textContent += button.textContent
-        memory += parseInt(button.textContent)
+        memory += button.textContent
     }
     
         
