@@ -126,10 +126,10 @@ equalButton.addEventListener('click', () => {
         result = eval(memory);
         result % 1 !== 0 && result.toString().split('.')[1].length > 9 ? display.textContent = result.toFixed(7) : display.textContent = result;
         result = memory;
-        display.classList.add('adding-text'); // Add class for animation
+        display.classList.add('adding-text'); 
         setTimeout(() => {
             display.classList.remove('adding-text');
-        }, 300); // Adjust timing as needed
+        }, 300); 
     } catch (err) {
         display.textContent = "Syntax error";
         memory = "Syntax error";
