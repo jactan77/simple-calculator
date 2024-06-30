@@ -65,25 +65,26 @@ operationButtons.forEach(button => {
                 display.textContent = display.textContent / 100
                 memory = memoryUsage
                 break; 
-            case ',':
-             if (memory !== result && display.textContent !== '' ) {
-                 display.textContent += '.';
-                 memory += '.';
-                
-            }  else if (memory !== result && display.textContent == '' ) {
-                display.textContent = "0."
-                memory += '0.'
-            } else if (memory == result && display.textContent == '0') {
-                display.textContent = "0."
-                memory = '0.'
-            }   
-            
-            else {
-                    display.textContent = "0"
-                    result = null;
-                    memory = "0"
+                case ',':
+                    
+                    if (memory !== result && display.textContent !== '') {
+                        
+                        if (!display.textContent.includes('.')) {
+                            display.textContent += '.';
+                            memory += '.';
+                        }
+                    } else if (memory !== result && display.textContent === '') {
+                        display.textContent = "0.";
+                        memory += '0.';
+                    } else if (memory === result && display.textContent === '0') {
+                        display.textContent = "0.";
+                        memory = '0.';
+                    } else {
+                        display.textContent = "0";
+                        result = null;
+                        memory = "0";
                     }
-                break; 
+                    break;
             case '+/-':
                 memoryUsage = eval(memory) * -1;
                 display.textContent = display.textContent * -1; 
