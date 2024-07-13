@@ -2,7 +2,8 @@ const numberButtons =  document.querySelectorAll('[number-operation]');
 const operationButtons = document.querySelectorAll('[data-operation]');
 const equalButton = document.querySelector('[data-equals]'); 
 const clearButton = document.querySelector('[data-delete]');
-const display = document.querySelector("#display");
+const display = document.querySelector(".display");
+const darkbutton = document.querySelector("#darkbutton");
 let memory = null; 
 let memoryUsage = null;
 let result = null;
@@ -136,3 +137,14 @@ equalButton.addEventListener('click', () => {
         memory = "Syntax error";
     }
 });
+
+darkbutton.addEventListener('click', () => {
+    document.body.classList.toggle("d1")
+    document.querySelector('.container').classList.toggle("d2");
+    document.querySelector('.display').classList.toggle("d3");
+    document.querySelector('.key').classList.toggle("d5");
+    document.querySelectorAll('button').forEach(button => {
+        button.classList.toggle("d4");
+    })
+    
+})
