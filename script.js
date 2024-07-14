@@ -4,6 +4,8 @@ const equalButton = document.querySelector('[data-equals]');
 const clearButton = document.querySelector('[data-delete]');
 const display = document.querySelector(".display");
 const darkbutton = document.querySelector("#darkbutton");
+const icon  = document.querySelector("#toggle");
+
 let memory = null; 
 let memoryUsage = null;
 let result = null;
@@ -146,5 +148,8 @@ darkbutton.addEventListener('click', () => {
     document.querySelectorAll('button').forEach(button => {
         button.classList.toggle("d4");
     })
+    
+    
+    icon.classList.toggle('bxs-sun');
     
 })
