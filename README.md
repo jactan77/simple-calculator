@@ -22,9 +22,9 @@ A basic calculator application that performs simple arithmetic operations like a
 
 ## Technologies Used
 
-- **HTML5**: For structuring the application.
 - **Vanilla CSS**: For styling the application.
 - **Vanilla JavaScript**: For implementing the calculator's functionality.
+
 
 ## Installation
 
