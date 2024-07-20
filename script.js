@@ -15,6 +15,7 @@ display.textContent = "0"
 numberButtons.forEach(button => {
     button.addEventListener('click', () => {
         clearButton.textContent = 'C';
+        
     if  (display.textContent == "0" || result == memory) {
         
         display.textContent = button.textContent
@@ -142,6 +143,7 @@ equalButton.addEventListener('click', () => {
 
 darkbutton.addEventListener('click', () => {
     document.body.classList.toggle("d1")
+  
     document.querySelector('.container').classList.toggle("d2");
     document.querySelector('.display').classList.toggle("d3");
     document.querySelector('.key').classList.toggle("d5");
@@ -151,5 +153,6 @@ darkbutton.addEventListener('click', () => {
     
     
     icon.classList.toggle('bxs-sun');
+    
     
 })
