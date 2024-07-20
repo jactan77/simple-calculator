@@ -32,11 +32,11 @@ To run this calculator locally, follow these steps:
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/simple-calculator-clone.git
+    git clone https://github.com/jtdev632/simple-calculator
     ```
 2. **Navigate to the project directory:**
     ```bash
-    cd simple-calculator-clone
+    cd simple-calculator
     ```
 
 ## Usage
