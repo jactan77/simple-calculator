@@ -1,4 +1,3 @@
-
 # Simple Calculator Clone
 
 A basic calculator application that performs simple arithmetic operations like addition, subtraction, multiplication, and division. This project is a clone of the traditional calculator you might find on your desktop or mobile device.
@@ -25,7 +24,7 @@ A basic calculator application that performs simple arithmetic operations like a
 
 - **HTML5**: For structuring the application.
 - **Vanilla CSS**: For styling the application.
-- **Vanilla JavaScript**: For implementing the calculator's functionality.
+- **TypeScript**: For implementing the calculator's functionality with type safety and modern JavaScript features.
 
 ## Installation
 
@@ -38,6 +37,14 @@ To run this calculator locally, follow these steps:
 2. **Navigate to the project directory:**
     ```bash
     cd simple-calculator-clone
+    ```
+3. **Install the necessary dependencies:**
+    ```bash
+    npm install
+    ```
+4. **Compile the TypeScript code:**
+    ```bash
+    npm run build
     ```
 
 ## Usage
@@ -70,6 +77,8 @@ All notable changes to this project will be documented in this section.
 - Initial release of the simple calculator clone.
 - Added basic arithmetic operations: addition, subtraction, multiplication, and division.
 - Implemented dark mode functionality.
+- Refused the use of the `eval()` method for improved security.
+- Rewrote the code in TypeScript for better code quality and maintainability.
 
 ### Soon
 
