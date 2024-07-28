@@ -10,6 +10,7 @@ A basic calculator application that performs simple arithmetic operations like a
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
+- [Changelog](#changelog)
 - [License](#license)
 
 ## Features
@@ -22,9 +23,9 @@ A basic calculator application that performs simple arithmetic operations like a
 
 ## Technologies Used
 
+- **HTML5**: For structuring the application.
 - **Vanilla CSS**: For styling the application.
 - **Vanilla JavaScript**: For implementing the calculator's functionality.
-
 
 ## Installation
 
@@ -32,11 +33,11 @@ To run this calculator locally, follow these steps:
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/jtdev632/simple-calculator
+    git clone https://github.com/your-username/simple-calculator-clone.git
     ```
 2. **Navigate to the project directory:**
     ```bash
-    cd simple-calculator
+    cd simple-calculator-clone
     ```
 
 ## Usage
@@ -59,6 +60,22 @@ Contributions are welcome! Please follow these steps:
 3. Commit your changes (`git commit -am 'Add new feature'`).
 4. Push to the branch (`git push origin feature-branch`).
 5. Create a new Pull Request.
+
+## Changelog
+
+All notable changes to this project will be documented in this section.
+
+### [Unreleased]
+
+- Initial release of the simple calculator clone.
+- Added basic arithmetic operations: addition, subtraction, multiplication, and division.
+- Implemented dark mode functionality.
+
+### Soon
+
+- Scientific calculator features
+- Memory function (M+, M-, MR, MC)
+- Improved UI/UX
 
 ## License
 
