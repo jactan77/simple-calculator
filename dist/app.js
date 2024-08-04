@@ -118,7 +118,12 @@ dotButton.onclick = () => {
 };
 equalButton.onclick = () => {
     calculate();
-    display.textContent = currentNumber;
+    if (currentNumber.includes('.') && currentNumber.toString().split('.')[1].length > 15) {
+        display.textContent = parseFloat(currentNumber).toFixed(14);
+    }
+    else {
+        currentNumber.length > 15 ? display.textContent = parseFloat(currentNumber).toFixed(10) : display.textContent = currentNumber;
+    }
     previousNumber = "";
     operations = "";
 };
