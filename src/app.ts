@@ -1,163 +1,96 @@
-const numberButtons: HTMLButtonElement[] = Array.from(document.querySelectorAll('[number-operation]'));
-const operationButtons: HTMLButtonElement[] = Array.from(document.querySelectorAll('[data-operation]'));
-const equalButton: HTMLButtonElement = document.querySelector('[data-equals]');
-const clearButton: HTMLButtonElement = document.querySelector('[data-delete]');
-const percentButton: HTMLButtonElement = document.querySelector('[percent-operation]')
-const signButton: HTMLButtonElement = document.querySelector('[sign-operation]');
-const dotButton: HTMLButtonElement = document.querySelector('[dot-operation]');
-const display: HTMLDivElement = document.querySelector(".display");
-const darkbutton: HTMLButtonElement = document.querySelector("#darkbutton");
-const icon: HTMLElement = document.querySelector("#toggle");
+abstract class CalculatorElements {
+   
+    constructor( 
+        protected currentNumber:string,  
+        protected previousNumber:string,  
+        protected operations:string, 
+        protected result:number){
 
-let currentNumber: string = "";
-let previousNumber: string = "";
-let operations: string = null
-let result: number = null;
-let err: string = null;
-
-
-
-
-display.textContent = "0";
-
-numberButtons.forEach(button => {
-    button.onclick = () => {
-      clearButton.textContent = "C";
-    if(result == null) {  
-        currentNumber += button.textContent;
-        display.textContent = currentNumber;
-    }else {
-        result = null;
-        currentNumber = button.textContent;
-        display.textContent = currentNumber;
     }
-    ;
-  }});
+
+}
 
 
-operationButtons.forEach(button => {
-    button.onclick = () => {
-        if(currentNumber !== ""){
-            if(previousNumber !== ""){
-                calculate()
-            }
-            previousNumber = currentNumber;
-            operations = button.textContent;
-            currentNumber = "";
-            display.textContent = "";
+
+
+class Display extends CalculatorElements {
+    private button:HTMLButtonElement
+    private display:HTMLDivElement
+
+    constructor(currentNumber:string, previousNumber:string, operations:string, result:number, button:HTMLButtonElement, display:HTMLDivElement) {
+        super(currentNumber, previousNumber, operations, result);
+        this.button = button;
+        this.display = display;
+    } 
+     UpdateDisplay():void {
+        if(this.result == null){
+            this.currentNumber = this.button.textContent;
+            this.display.textContent = this.currentNumber;
+        } else {
+            this.result = null;
+            this.currentNumber = this.button.textContent;
+            this.display.textContent = this.currentNumber;
+        }
+ }
+    clearDisplay():void {
+        this.currentNumber = "";
+        this.previousNumber = "";
+        this.operations = null;
+        this.result = null;
+        this.display.textContent = "0";
+    }
+    operation():void{
+        if(this.currentNumber !== ""){
+            if(this.previousNumber !== ""){
+               this.calculation(); 
+            }else{
+            this.previousNumber = this.currentNumber;
+            this.operations = this.button.textContent;
+            this.currentNumber = ""
+            this.display.textContent = ""
+            
         }
     }
+    }
+    calculation():number{
+        const num1:number = parseFloat(this.currentNumber)
+        const num2:number = parseFloat(this.previousNumber)
+        switch(this.operations){
+            case "+":
+                this.result = num1 + num2;
+                break;
+            case "-":
+                this.result = num2 - num1;
+                break;
+            case "X":
+                this.result = num1 * num2;
+                break;
+            case "/":
+                if(num2!=0){
+                    this.result = num1 / num2;
+                } else {
+                    throw new Error("Division by zero is not allowed");
+                }
+                break;
+            default:
+                throw new Error("Invalid operation");
+        }
+        return this.result;
+    }
+
+    
+}
+
+// UI inmplemetation
+
+const button: HTMLButtonElement = document.getElementById("button") as HTMLButtonElement
+const display: HTMLDivElement = document.getElementById("display") as HTMLDivElement
+
+const calculator: Display = new Display("", "", null, null, button, display)
+
+button.addEventListener("click", () => {
+    calculator.operation();
+    calculator.UpdateDisplay();
 })
 
-function calculate(){
-    let num1  = parseFloat(previousNumber);
-    let num2 = parseFloat(currentNumber);
-    
-    switch(operations){
-        case "+":
-            result = num1 + num2;
-            break; 
-        case "X":
-            result = num1 * num2;
-            break;
-        case "-":
-            result = num1 - num2;
-            break; 
-        case "/":
-            if(num2 == 0){
-                err = "Error: Division by zero"
-                display.textContent = err
-                return err
-            }else {
-                result = num1 / num2;
-            }
-            break;
-        
-        default:
-    }
-    currentNumber = result.toString();
-   
-}
-percentButton.onclick = () => {
-    if(currentNumber !== "" && currentNumber == display.textContent){
-        let num1 = parseFloat(currentNumber);
-        result = num1 * 0.01
-        currentNumber = result.toString();
-        result = null
-        display.textContent = currentNumber;
-    }
-}
-signButton.onclick = () => {
-    if(currentNumber !== "" && currentNumber==display.textContent){
-        let num1 = parseFloat(currentNumber);
-        result = num1 * -1
-        currentNumber = result.toString();
-        result = null
-        display.textContent = currentNumber;
-    }
-}
 
-dotButton.onclick = () => {
-    if(currentNumber.includes('.') && display.textContent.includes('.')){
-        if(result !== null){
-            result = null
-            currentNumber = "0."
-            display.textContent = "0.";
-        } else {
-            return
-        }
-    }else{
-    if(currentNumber !== "" && display.textContent == currentNumber ){
-        if(result !== null){
-            result = null
-            currentNumber = "0."
-            display.textContent = "0.";
-        } else {
-        
-        currentNumber += ".";
-        display.textContent = currentNumber;}
-    } else if(currentNumber == "" && display.textContent ==  "0" ){
-        currentNumber = "0.";
-        display.textContent = "0.";
-    } 
-
-    }
-}
-equalButton.onclick = () => {
-    calculate();
-if(currentNumber.includes('.') &&  currentNumber.toString().split('.')[1].length > 15)  {   
-    
-    display.textContent = parseFloat(currentNumber).toFixed(14);
-}  else {
-    currentNumber.length > 15 ? display.textContent = parseFloat(currentNumber).toFixed(10) : display.textContent = currentNumber
-}
-
-    previousNumber = "";
-    operations = ""
-  };
-
-clearButton.onclick = () => {
-    currentNumber = "";
-    previousNumber = "";
-    operations = null;
-    result = null;
-    display.textContent = "0";
-    err = null;
-    clearButton.textContent = "AC";
-}
-
-
-
-darkbutton.onclick = () => {
-    document.body.classList.toggle("d1")
-  
-    document.querySelector('.container').classList.toggle("d2");
-    document.querySelector('.display').classList.toggle("d3");
-    document.querySelector('.key').classList.toggle("d5");
-    document.querySelectorAll('button').forEach(button => {
-        button.classList.toggle("d4");
-    })
-    
-    
-    icon.classList.toggle('bxs-sun');
-}
