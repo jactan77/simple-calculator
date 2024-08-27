@@ -11,7 +11,7 @@ class Display extends CalculatorElements {
         super(currentNumber, previousNumber, operations, result);
         this.display = display;
     }
-    UpdateDisplay(buttonValue) {
+    updateDisplay(buttonValue) {
         if (this.result == null) {
             this.currentNumber += buttonValue;
             this.display.textContent = this.currentNumber;
@@ -99,7 +99,7 @@ class Display extends CalculatorElements {
         }
     }
 }
-class Perfroming extends Display {
+class Penforming extends Display {
     static resetCalculator(calculator) {
         calculator.clearDisplay();
     }
@@ -117,15 +117,15 @@ const dotButton = document.querySelector('[dot-operation]');
 const equalButton = document.querySelector('[data-equals]');
 numberButtons.forEach((button) => {
     button.addEventListener('click', () => {
-        calculator.UpdateDisplay(button.textContent);
+        calculator.updateDisplay(button.textContent);
     });
 });
 clearButton.addEventListener('click', () => {
-    Perfroming.resetCalculator(calculator);
+    Penforming.resetCalculator(calculator);
 });
 operationButtons.forEach((button) => {
     button.addEventListener('click', () => {
-        Perfroming.performOperation(calculator, button);
+        Penforming.performOperation(calculator, button);
     });
 });
 dotButton.addEventListener('click', () => {

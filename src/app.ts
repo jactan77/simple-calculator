@@ -30,7 +30,7 @@ class Display extends CalculatorElements {
         
         
     } 
-     UpdateDisplay(buttonValue:string):void {
+     updateDisplay(buttonValue:string):void {
         if(this.result == null){
             this.currentNumber += buttonValue;
             this.display.textContent = this.currentNumber;
@@ -117,7 +117,7 @@ class Display extends CalculatorElements {
    
     
 }
-class Perfroming extends Display {
+class Penforming extends Display {
     static resetCalculator(calculator:Display){
         calculator.clearDisplay();
     }
@@ -139,17 +139,17 @@ const equalButton: HTMLButtonElement = document.querySelector('[data-equals]');
 
 numberButtons.forEach((button: HTMLButtonElement) => {
     button.addEventListener('click', () => {
-        calculator.UpdateDisplay(button.textContent);
+        calculator.updateDisplay(button.textContent);
     })
 })
 
 clearButton.addEventListener('click', () => {
-    Perfroming.resetCalculator(calculator);
+    Penforming.resetCalculator(calculator);
 })
 
 operationButtons.forEach((button: HTMLButtonElement) => {
     button.addEventListener('click', () => {
-        Perfroming.performOperation(calculator, button);
+        Penforming.performOperation(calculator, button);
         
     })
 })
