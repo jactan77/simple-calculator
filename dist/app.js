@@ -7,19 +7,18 @@ class CalculatorElements {
     }
 }
 class Display extends CalculatorElements {
-    constructor(currentNumber, previousNumber, operations, result, button, display) {
+    constructor(currentNumber, previousNumber, operations, result, display) {
         super(currentNumber, previousNumber, operations, result);
-        this.button = button;
         this.display = display;
     }
-    UpdateDisplay() {
+    UpdateDisplay(buttonValue) {
         if (this.result == null) {
-            this.currentNumber = this.button.textContent;
+            this.currentNumber += buttonValue;
             this.display.textContent = this.currentNumber;
         }
         else {
             this.result = null;
-            this.currentNumber = this.button.textContent;
+            this.currentNumber = buttonValue;
             this.display.textContent = this.currentNumber;
         }
     }
@@ -30,17 +29,15 @@ class Display extends CalculatorElements {
         this.result = null;
         this.display.textContent = "0";
     }
-    operation() {
+    operation(buttonValue) {
         if (this.currentNumber !== "") {
             if (this.previousNumber !== "") {
                 this.calculation();
             }
-            else {
-                this.previousNumber = this.currentNumber;
-                this.operations = this.button.textContent;
-                this.currentNumber = "";
-                this.display.textContent = "";
-            }
+            this.previousNumber = this.currentNumber;
+            this.operations = buttonValue;
+            this.currentNumber = "";
+            this.display.textContent = "";
         }
     }
     calculation() {
@@ -67,14 +64,73 @@ class Display extends CalculatorElements {
             default:
                 throw new Error("Invalid operation");
         }
-        return this.result;
+        this.currentNumber = this.result.toString();
+        this.display.textContent = this.currentNumber;
+        this.previousNumber = "";
+        this.operations = "";
+    }
+    dotOperation() {
+        if (this.currentNumber.includes('.') && this.display.textContent.includes('.')) {
+            if (this.result !== null) {
+                this.result = null;
+                this.currentNumber = "0.";
+                this.display.textContent = "0.";
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            if (this.currentNumber !== "" && this.display.textContent == this.currentNumber) {
+                if (this.result !== null) {
+                    this.result = null;
+                    this.currentNumber = "0.";
+                    display.textContent = "0.";
+                }
+                else {
+                    this.currentNumber += ".";
+                    display.textContent = this.currentNumber;
+                }
+            }
+            else if (this.currentNumber == "" && display.textContent == "0") {
+                this.currentNumber = "0.";
+                display.textContent = "0.";
+            }
+        }
+    }
+}
+class Perfroming extends Display {
+    static resetCalculator(calculator) {
+        calculator.clearDisplay();
+    }
+    static performOperation(calculation, buttonValue) {
+        calculation.operation(buttonValue.textContent);
     }
 }
 // UI inmplemetation
-const button = document.getElementById("button");
-const display = document.getElementById("display");
-const calculator = new Display("", "", null, null, button, display);
-button.addEventListener("click", () => {
-    calculator.operation();
-    calculator.UpdateDisplay();
+const numberButtons = document.querySelectorAll('[number-operation]');
+const display = document.querySelector(".display");
+const operationButtons = document.querySelectorAll('[data-operation]');
+const clearButton = document.querySelector('[data-delete]');
+const calculator = new Display("", "", null, null, display);
+const dotButton = document.querySelector('[dot-operation]');
+const equalButton = document.querySelector('[data-equals]');
+numberButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        calculator.UpdateDisplay(button.textContent);
+    });
+});
+clearButton.addEventListener('click', () => {
+    Perfroming.resetCalculator(calculator);
+});
+operationButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        Perfroming.performOperation(calculator, button);
+    });
+});
+dotButton.addEventListener('click', () => {
+    calculator.dotOperation();
+});
+equalButton.addEventListener('click', () => {
+    calculator.calculation();
 });
