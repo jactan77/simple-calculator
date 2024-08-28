@@ -89,22 +89,44 @@ class Display extends CalculatorElements {
                 }
                 else {
                     this.currentNumber += ".";
-                    display.textContent = this.currentNumber;
+                    this.display.textContent = this.currentNumber;
                 }
             }
-            else if (this.currentNumber == "" && display.textContent == "0") {
+            else if (this.currentNumber == "" && this.display.textContent == "0") {
                 this.currentNumber = "0.";
-                display.textContent = "0.";
+                this.display.textContent = "0.";
             }
         }
     }
+    percent() {
+        if (this.currentNumber !== "" && this.currentNumber == this.display.textContent) {
+            this.result = parseFloat(this.currentNumber) * 0.01;
+            this.currentNumber = this.result.toString();
+            this.result = null;
+            this.display.textContent = this.currentNumber;
+        }
+    }
+    signOperation() {
+        if (this.currentNumber !== "" && this.currentNumber == display.textContent) {
+            this.result = parseFloat(this.currentNumber) * -1;
+            this.currentNumber = this.result.toString();
+            this.result = null;
+            display.textContent = this.currentNumber;
+        }
+    }
 }
-class Penforming extends Display {
+class Performing extends Display {
     static resetCalculator(calculator) {
         calculator.clearDisplay();
     }
     static performOperation(calculation, buttonValue) {
         calculation.operation(buttonValue.textContent);
+    }
+    static percentOperation(calculator) {
+        calculator.percent();
+    }
+    static signPerform(calculator) {
+        calculator.signOperation();
     }
 }
 // UI inmplemetation
@@ -115,18 +137,30 @@ const clearButton = document.querySelector('[data-delete]');
 const calculator = new Display("", "", null, null, display);
 const dotButton = document.querySelector('[dot-operation]');
 const equalButton = document.querySelector('[data-equals]');
+const percentButton = document.querySelector('[percent-operation]');
+const signButton = document.querySelector('[sign-operation]');
+const darkbutton = document.querySelector("#darkbutton");
+const icon = document.querySelector("#toggle");
 numberButtons.forEach((button) => {
     button.addEventListener('click', () => {
+        clearButton.textContent = 'C';
         calculator.updateDisplay(button.textContent);
     });
 });
 clearButton.addEventListener('click', () => {
-    Penforming.resetCalculator(calculator);
+    Performing.resetCalculator(calculator);
+    clearButton.textContent = 'AC';
 });
 operationButtons.forEach((button) => {
     button.addEventListener('click', () => {
-        Penforming.performOperation(calculator, button);
+        Performing.performOperation(calculator, button);
     });
+});
+signButton.addEventListener('click', () => {
+    Performing.signPerform(calculator);
+});
+percentButton.addEventListener('click', () => {
+    Performing.percentOperation(calculator);
 });
 dotButton.addEventListener('click', () => {
     calculator.dotOperation();
@@ -134,3 +168,13 @@ dotButton.addEventListener('click', () => {
 equalButton.addEventListener('click', () => {
     calculator.calculation();
 });
+darkbutton.onclick = () => {
+    document.body.classList.toggle("d1");
+    document.querySelector('.container').classList.toggle("d2");
+    document.querySelector('.display').classList.toggle("d3");
+    document.querySelector('.key').classList.toggle("d5");
+    document.querySelectorAll('button').forEach(button => {
+        button.classList.toggle("d4");
+    });
+    icon.classList.toggle('bxs-sun');
+};

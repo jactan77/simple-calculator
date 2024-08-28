@@ -10,10 +10,6 @@ abstract class CalculatorElements {
     }
 
 }
-
-
-
-
 class Display extends CalculatorElements {
     
     private display:HTMLDivElement
@@ -106,18 +102,38 @@ class Display extends CalculatorElements {
             } else {
             
             this.currentNumber += ".";
-            display.textContent = this.currentNumber;}
-        } else if(this.currentNumber == "" && display.textContent ==  "0" ){
+            this.display.textContent = this.currentNumber;}
+        } else if(this.currentNumber == "" && this.display.textContent ==  "0" ){
             this.currentNumber = "0.";
-            display.textContent = "0.";
+            this.display.textContent = "0.";
         } 
     
     }
+        
+    
 }
+
+    percent():void{
+        if(this.currentNumber !== "" && this.currentNumber == this.display.textContent){
+            this.result = parseFloat(this.currentNumber) * 0.01
+            this.currentNumber = this.result.toString();
+            this.result = null
+            this.display.textContent = this.currentNumber;
+           }
+        }
+    signOperation():void{
+        if(this.currentNumber !== "" && this.currentNumber==display.textContent){
+            
+            this.result = parseFloat(this.currentNumber) * -1
+            this.currentNumber = this.result.toString();
+            this.result = null
+            display.textContent = this.currentNumber;
+        }
+    }
    
     
 }
-class Penforming extends Display {
+class Performing extends Display {
     static resetCalculator(calculator:Display){
         calculator.clearDisplay();
     }
@@ -125,8 +141,17 @@ class Penforming extends Display {
         calculation.operation(buttonValue.textContent)
 
     }
+
+    static percentOperation(calculator:Display):void{
+        calculator.percent()
+    }
+
+    static signPerform(calculator:Display):void{
+        calculator.signOperation();
+    }
     
 }
+
 // UI inmplemetation
 
 const numberButtons = document.querySelectorAll('[number-operation]') as NodeListOf<HTMLButtonElement>;
@@ -136,22 +161,35 @@ const clearButton: HTMLButtonElement = document.querySelector('[data-delete]');
 const calculator: Display = new Display("", "", null, null,display)
 const dotButton: HTMLButtonElement = document.querySelector('[dot-operation]');
 const equalButton: HTMLButtonElement = document.querySelector('[data-equals]');
+const percentButton: HTMLButtonElement = document.querySelector('[percent-operation]')
+const signButton: HTMLButtonElement = document.querySelector('[sign-operation]');
+const darkbutton: HTMLButtonElement = document.querySelector("#darkbutton");
+const icon: HTMLElement = document.querySelector("#toggle");
 
 numberButtons.forEach((button: HTMLButtonElement) => {
     button.addEventListener('click', () => {
+        clearButton.textContent = 'C'
         calculator.updateDisplay(button.textContent);
     })
 })
 
 clearButton.addEventListener('click', () => {
-    Penforming.resetCalculator(calculator);
+    Performing.resetCalculator(calculator);
+    clearButton.textContent = 'AC'
 })
 
 operationButtons.forEach((button: HTMLButtonElement) => {
     button.addEventListener('click', () => {
-        Penforming.performOperation(calculator, button);
+        Performing.performOperation(calculator, button);
         
     })
+})
+signButton.addEventListener('click', () => {
+    Performing.signPerform(calculator);
+});
+
+percentButton.addEventListener('click', () => {
+    Performing.percentOperation(calculator);
 })
 
 dotButton.addEventListener('click', () => {
@@ -160,6 +198,19 @@ dotButton.addEventListener('click', () => {
 
 equalButton.addEventListener('click', () => {
     calculator.calculation();
-    
-    
 })
+
+darkbutton.onclick = () => {
+    document.body.classList.toggle("d1")
+  
+    document.querySelector('.container').classList.toggle("d2");
+    document.querySelector('.display').classList.toggle("d3");
+    document.querySelector('.key').classList.toggle("d5");
+    document.querySelectorAll('button').forEach(button => {
+        button.classList.toggle("d4");
+    })
+    
+    
+    icon.classList.toggle('bxs-sun');
+}
+
