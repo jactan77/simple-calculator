@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style1.css" type="text/css">
+    <title>Calculator with Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    
+    <nav class="navbar">
+        <ul>
+            
+                
+                <li><a href="#" id="logout-link">Logout</a></li>
+                <li><a href="#" id="history-link">History</a></li>
+                
+                
+                
+        </ul>
+    </nav>
+    <!-- Calculator Page (Hidden initially) -->
+    <div id="calculator-container" class="container">
+        <div class="calculator">
+            <div class="display"></div>
+            <div class="key">
+                <button data-delete>AC</button>
+                <button sign-operation>+/-</button>
+                <button percent-operation>%</button>
+                <button data-operation>/</button>
+                <button number-operation>7</button>
+                <button number-operation>8</button>
+                <button number-operation>9</button>
+                <button data-operation>X</button>
+                <button number-operation>4</button>
+                <button number-operation>5</button>
+                <button number-operation>6</button>
+                <button data-operation>-</button>
+                <button number-operation>1</button>
+                <button number-operation>2</button>
+                <button number-operation>3</button>
+                <button data-operation>+</button>
+                <button number-operation>0</button>
+                <button dot-operation>,</button>
+                <button data-equals>=</button> 
+                <button id='darkbutton'><i id="toggle" class='bx bxs-moon'></i></button>
+            </div>
+        </div>
+        <div class="history-container">
+            <button class="clear-history">Clear History</button>
+            <ul class="history"></ul>
+        </div>
+    </div>
+
+    <script src="dist/index.js"></script>
+    <script src="dist/app.js"></script>
+</body>
+</html>

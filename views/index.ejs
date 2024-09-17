@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css" type="text/css"> <!-- Link to your CSS file for styling -->
+    <title>Dashboard</title>
+</head>
+<body>
+    <div id="dashboard-container" class="dashboard-container">
+        <h1>Welcome, <%= username %>!</h1>
+        <p>You are now logged in.</p>
+        
+        
+        <form action="/logout" method="POST">
+            <button type="submit" class="btn">Logout</button>
+        </form>
+        <form action="/calculator">
+            <button type="submit" class='btn'>Calculator</button>
+        </form>
+    </div>
+</body>
+</html>
