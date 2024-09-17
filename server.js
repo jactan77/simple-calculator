@@ -148,5 +148,5 @@ app.delete('/history', AuthMiddleware.isAuthenticated, (req, res)=>{
 })
 
 app.listen(3000, () => {
-    console.log('Serwer działa na porcie 3000');
+    console.log('Server listening on port 3000');
 });
