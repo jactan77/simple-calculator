@@ -1,12 +1,17 @@
 const express = require('express');
 const path = require('path');
+const http = require('http');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const session = require('express-session');
 const UserManager = require('./utils/UserManager'); 
+const AuthMiddleware = require('./utils/AuthMiddleware');
+const { WebSocketServer } = require('ws');
+
 const app = express();
-const userManager = new UserManager(path.join(__dirname, 'data', 'usersApi.json')); // Initialize UserManager with the path to the JSON file
-const AuthMiddleware = require('./utils/AuthMiddleware')
+const server = http.createServer(app);
+const wss = new WebSocketServer({server})
+
+const userManager = new UserManager(path.join(__dirname, 'data', 'usersApi.json')); 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -22,7 +27,24 @@ app.use(
         cookie: { maxAge: 3600000 }, 
     })
 );
+wss.on('connection', (ws) => {
+    console.log('WebSocket connection established');
 
+    ws.on('message', (message) => {
+        console.log('Received:', message);
+
+        // Broadcast message to all connected clients
+        wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    });
+
+    ws.on('close', () => {
+        console.log('WebSocket connection closed');
+    });
+});
 app.get('/calculator', AuthMiddleware.isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index1.html'));
 });
@@ -103,26 +125,31 @@ app.post('/logout', (req, res) => {
 
 app.post('/history', AuthMiddleware.isAuthenticated, (req, res) => {
     const { operation, result, timestamp } = req.body;
-    let users = userManager.readUser(); 
+    const users = userManager.readUser(); 
 
     
-    const userIndex = users.findIndex(user => user.id === req.session.userId);
-    if (userIndex === -1) {
-        return res.status(404).send('User not found');
+    const user = users.find(user => user.id === req.session.userId);
+    if(!user){
+        return res.status(404).send('Such a user was not found');
+    }
+    const historyEntry = {
+        operation,
+        result,
+        timestamp
     }
 
-    
-    const user = users[userIndex]; 
-    if (!user.history) {
-        user.history = []; 
-    }
-    user.history.push({ operation, result, timestamp });
-
-    
-    users[userIndex] = user;
-
-    
+    user.history.push(historyEntry)
     userManager.writeUser(users);
+    
+    wss.clients.forEach((client)=> {
+        if(client.readyState === WebSocket.OPEN){
+            client.send(JSON.stringify({type: 'new-history', data: historyEntry }))
+        }
+    })
+    
+    
+    
+    
     console.log(user)
     res.status(200).send('History updated successfully');
 });
@@ -142,7 +169,11 @@ app.delete('/history', AuthMiddleware.isAuthenticated, (req, res)=>{
     }
     user.history = [];
     userManager.writeUser(users);
-    
+    wss.clients.forEach((client) =>{
+        if(client.readyState === WebSocket.OPEN){
+            client.send(JSON.stringify({type: 'clear-history'}))
+        }
+    })
 
 
 })
