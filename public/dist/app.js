@@ -20,6 +20,50 @@ class Display extends CalculatorElements {
         super(currentNumber, previousNumber, operations, result);
         this.display = display;
         this.historyDisplay = displayHistory;
+        this.socket = new WebSocket(`ws://${window.location.host}`);
+        this.initializeWebSocket();
+    }
+    initializeWebSocket() {
+        this.socket.onopen = () => {
+            console.log('WebSocket connected');
+        };
+        this.socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === 'new-history') {
+                this.addHisotryUI(message.data);
+            }
+            else if (message.type === 'clear-history') {
+                this.clearHistoryUI();
+            }
+        };
+        this.socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+        this.socket.onclose = () => {
+            console.log('WebSocket disconnected');
+        };
+    }
+    sendMessage(type, data = {}) {
+        if (this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify({ type, data }));
+        }
+        else {
+            console.error('WebSocket is not connected');
+        }
+    }
+    addHisotryUI(history) {
+        const historyLi = document.createElement('li');
+        historyLi.textContent = history.operation;
+        historyLi.dataset.timestamp = history.timestamp;
+        this.historyDisplay.appendChild(historyLi);
+        historyLi.onclick = () => {
+            this.loadHistoryResults(history.timestamp);
+        };
+    }
+    clearHistoryUI() {
+        while (this.historyDisplay.firstChild) {
+            this.historyDisplay.removeChild(this.historyDisplay.firstChild);
+        }
     }
     updateDisplay(buttonValue) {
         if (this.display.textContent.length <= 14) {
@@ -138,92 +182,62 @@ class Display extends CalculatorElements {
                 timestamp: new Date().toISOString()
             };
             try {
-                const response = yield fetch('/history', { method: 'POST',
+                yield this.fetchRequest('/history', 'POST', history);
+                this.addHisotryUI(history);
+                this.sendMessage('new-history', history);
+            }
+            catch (error) {
+                console.error('Error adding history:', error);
+            }
+        });
+    }
+    fetchRequest(url, method, body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const response = yield fetch(url, {
+                    method,
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(history)
+                    body: body ? JSON.stringify(body) : null
                 });
-                if (!response) {
-                    console.error('Error fetching history');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                return response;
             }
             catch (error) {
-                console.error(error);
+                console.error(`Error with ${method} request to ${url}:`, error);
+                throw error;
             }
-            const historyLi = document.createElement('li');
-            historyLi.textContent = history.operation;
-            historyLi.dataset.timestamp = history.timestamp;
-            this.historyDisplay.appendChild(historyLi);
-            historyLi.onclick = () => {
-                this.loadHistoryResults(history.timestamp);
-            };
         });
     }
     loadHistory() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield fetch('history', { method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response) {
-                    console.error('Error loading history');
-                }
+                const response = yield this.fetchRequest('/history', 'GET');
                 const history = yield response.json();
-                history.forEach(item => {
-                    const historyLi = document.createElement('li');
-                    historyLi.textContent = item.operation;
-                    historyLi.dataset.timestamp = item.timestamp;
-                    this.historyDisplay.appendChild(historyLi);
-                    historyLi.onclick = () => {
-                        this.loadHistoryResults(item.timestamp);
-                    };
-                });
+                this.historyDisplay.innerHTML = '';
+                history.forEach(item => this.addHisotryUI(item));
             }
             catch (error) {
-                console.error(error);
+                console.error('Error loading history:', error);
             }
         });
     }
     clearHistory() {
         return __awaiter(this, void 0, void 0, function* () {
-            while (this.historyDisplay.firstChild) {
-                this.historyDisplay.removeChild(this.historyDisplay.firstChild);
-            }
-            try {
-                const response = yield fetch('/history', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response) {
-                    console.error("Failed to clear history");
-                }
-            }
-            catch (error) {
-                console.error(error);
-            }
+            this.clearHistoryUI();
         });
     }
     loadHistoryResults(timestamp) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield fetch('/history', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error("Failed to load history Results");
-                }
+                const response = yield this.fetchRequest('/history', 'GET');
                 const history = yield response.json();
-                const selectItem = history.find(entry => entry.timestamp === timestamp);
-                if (selectItem) {
-                    this.currentNumber = selectItem.result;
+                const selectedItem = history.find(entry => entry.timestamp === timestamp);
+                if (selectedItem) {
+                    this.currentNumber = selectedItem.result;
                     this.display.textContent = this.currentNumber;
                     this.previousNumber = "";
                     this.operations = "";
@@ -231,7 +245,7 @@ class Display extends CalculatorElements {
                 }
             }
             catch (error) {
-                console.error(error);
+                console.error('Failed to load history result:', error);
             }
         });
     }

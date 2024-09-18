@@ -10,11 +10,16 @@ abstract class CalculatorElements {
     }
 
 }
+interface HistoryItem {
+    operation: string;
+    result: string;
+    timestamp: string;
+}
 class Display extends CalculatorElements {
     
     private display:HTMLDivElement
     private historyDisplay: HTMLUListElement;
-    
+    private socket:WebSocket
     constructor(
         currentNumber:string | null, 
         previousNumber:string | null, 
@@ -27,9 +32,59 @@ class Display extends CalculatorElements {
         super(currentNumber, previousNumber, operations, result);
         this.display = display;
         this.historyDisplay = displayHistory;
-        
+        this.socket = new WebSocket(`ws://${window.location.host}`)
+        this.initializeWebSocket()
 } 
-     updateDisplay(buttonValue:string):void {
+     
+private initializeWebSocket(){
+    this.socket.onopen = () => {
+        console.log('WebSocket connected');
+    };
+
+    this.socket.onmessage = (event)=> {
+        const message = JSON.parse(event.data);
+        if(message.type === 'new-history'){
+            this.addHisotryUI(message.data);
+        } else if(message.type === 'clear-history'){
+            this.clearHistoryUI();
+        }
+    }
+    
+    this.socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+    
+    this.socket.onclose = () => {
+        console.log('WebSocket disconnected');
+    };
+
+}
+
+private sendMessage(type: string, data: any = {}):void{
+    if(this.socket.readyState === WebSocket.OPEN){
+        this.socket.send(JSON.stringify({ type, data }));
+    }else{
+        console.error('WebSocket is not connected');
+    }
+}
+
+private addHisotryUI(history: HistoryItem): void {
+    const historyLi = document.createElement('li');
+        historyLi.textContent = history.operation;
+        historyLi.dataset.timestamp = history.timestamp;
+        this.historyDisplay.appendChild(historyLi);
+        historyLi.onclick = () => {
+            this.loadHistoryResults(history.timestamp);
+        }
+}    
+
+private clearHistoryUI(): void {
+    while (this.historyDisplay.firstChild) {
+        this.historyDisplay.removeChild(this.historyDisplay.firstChild);
+    } 
+}
+
+updateDisplay(buttonValue:string):void {
         if(this.display.textContent.length <= 14){     
             if (this.result == null) {
                 this.currentNumber[0] == '0' ? this.currentNumber = buttonValue : this.currentNumber += buttonValue;
@@ -141,121 +196,79 @@ class Display extends CalculatorElements {
         }
     }
     async addHistory(): Promise<void> {
-        let history = {
+        let history:HistoryItem = {
             operation: `${this.previousNumber} ${this.operations} ${this.currentNumber} = ${this.result.toString()}`,
             result: this.result.toString(),
             timestamp: new Date().toISOString()
         }
+        
+       try {
+          await this.fetchRequest('/history', 'POST', history)
+          this.addHisotryUI(history); 
+          this.sendMessage('new-history', history);
+        } catch (error){
+            console.error('Error adding history:', error);
+        }
+    }
+
+    private async fetchRequest(url:string, method:string, body?:any): Promise<Response> {
         try {
-            const response = await fetch('/history',
-            {   method: 'POST',
+            const response = await fetch(url, {
+                method,
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(history)
-            })
-            if(!response){
-                console.error('Error fetching history')
+                body: body ? JSON.stringify(body) : null
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        } catch(error){
-            console.error(error)
+            return response;
+        } catch (error) {
+            console.error(`Error with ${method} request to ${url}:`, error);
+            throw error;
         }
-        const historyLi = document.createElement('li');
-        historyLi.textContent = history.operation;
-        historyLi.dataset.timestamp = history.timestamp;
-        this.historyDisplay.appendChild(historyLi);
-        historyLi.onclick = () => {
-            this.loadHistoryResults(history.timestamp);
-        }
+    
+
     }
+
+     
     
     async loadHistory(): Promise<void> {
-        try{
-            const response = await fetch('history',
-                {   method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
-                
-            )
-            if(!response){
-                console.error('Error loading history') 
-            }
-            const history: {operation:string; timestamp:string}[] = await response.json();
-            history.forEach(item => {
-                const historyLi = document.createElement('li');
-                historyLi.textContent = item.operation;
-                historyLi.dataset.timestamp = item.timestamp;
-                this.historyDisplay.appendChild(historyLi);
-                historyLi.onclick = () => {
-                    this.loadHistoryResults(item.timestamp);
-                }
-            })
-
-
+        try {
+            const response = await this.fetchRequest('/history', 'GET')
+            const history: HistoryItem[] = await response.json();
+            this.historyDisplay.innerHTML = ''
+            history.forEach(item =>this.addHisotryUI(item));
         } catch(error){
-            console.error(error)
+            console.error('Error loading history:', error);
         }
-       
     }
 
 
     async clearHistory(): Promise <void> {
-        while (this.historyDisplay.firstChild) {
-            this.historyDisplay.removeChild(this.historyDisplay.firstChild);
-        }  
-            try{
-                const response = await fetch('/history',
-                    {
-                        method: 'DELETE',
-                        headers:{
-                            'Content-Type': 'application/json'
-                        }
-                    }
-                )
-            if(!response){    
-                console.error("Failed to clear history"); 
-            } 
-        }
-        
-            catch(error){
-                console.error(error)
-            }
-                  
-            }
+            this.clearHistoryUI();
 
+      
+                  
+        }
         async loadHistoryResults(timestamp: string): Promise<void> {
-                try {
-                    const response = await fetch('/history', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
-            
-                    if (!response.ok) {
-                        throw new Error("Failed to load history Results");
-                    }
-                    const history:{timestamp: string; result:string}[]= await response.json();
-                    const selectItem = history.find(entry => entry.timestamp === timestamp)
-                    if (selectItem) {
-                        this.currentNumber = selectItem.result;
-                        this.display.textContent = this.currentNumber;
-                        this.previousNumber = "";
-                        this.operations = "";
-                        this.result = null;
-                    
-                    }
-                    
-                    
-                    
-                    
-                    
-                } catch (error) {
-                    console.error(error);
+            try {
+                const response = await this.fetchRequest('/history', 'GET');
+                const history: HistoryItem[] = await response.json();
+                const selectedItem = history.find(entry => entry.timestamp === timestamp);
+    
+                if (selectedItem) {
+                    this.currentNumber = selectedItem.result;
+                    this.display.textContent = this.currentNumber;
+                    this.previousNumber = "";
+                    this.operations = "";
+                    this.result = null;
                 }
+            } catch (error) {
+                console.error('Failed to load history result:', error);
             }
+        }
 
    
     
