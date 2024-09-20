@@ -7,7 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-document.querySelector('#logout-link').addEventListener('click', function (event) {
+var _a, _b;
+(_a = document.querySelector('#logout-link')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function (event) {
     return __awaiter(this, void 0, void 0, function* () {
         event.preventDefault();
         try {
@@ -25,7 +26,29 @@ document.querySelector('#logout-link').addEventListener('click', function (event
             }
         }
         catch (error) {
-            console.error(error);
+            console.error('Error during logout:', error);
+        }
+    });
+});
+(_b = document.querySelector('#menu-link')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', function (event) {
+    return __awaiter(this, void 0, void 0, function* () {
+        event.preventDefault();
+        try {
+            const response = yield fetch('/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.ok) {
+                window.location.href = '/';
+            }
+            else {
+                throw new Error('Failed to fetch menu');
+            }
+        }
+        catch (error) {
+            console.error('Error during menu navigation:', error);
         }
     });
 });
