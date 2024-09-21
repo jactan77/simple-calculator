@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css" type="text/css">
+    <title>Settings</title>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            
+                
+                <li><a id="logout-link">Logout</a></li>
+                <li><a id="menu-link">Menu</a></li>
+        </ul>
+    </nav>
+    <main class="content">
+      
+        <div class="user-settings">
+            <div class="user-info">
+                <div class="avatar"><%=username[0].toUpperCase()%></div>
+                <div class="user-details">
+                    <h2><%= username %></h2>
+                    
+                </div>
+            </div>
+            <form class="user-form" action="/settings" method="POST" >
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" value="<%= username %>">
+                </div>
+               <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="<%= email %>">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" name="password">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password">
+                </div>
+                <button type="submit" class="save-btn">Save</button>
+            </form>
+        </div>
+    </main>
+</div>
+   
+    <script src="dist/index.js"></script>
+</body>
+</html>

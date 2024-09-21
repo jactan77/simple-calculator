@@ -6,6 +6,7 @@ const session = require('express-session');
 const UserManager = require('./utils/UserManager'); 
 const AuthMiddleware = require('./utils/AuthMiddleware');
 const { WebSocketServer } = require('ws');
+const { read } = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -58,7 +59,11 @@ app.get('/',AuthMiddleware.isAuthenticated,(req, res) => {
 app.get('/login', (req, res) => {
     res.render('login.ejs');
 });
+app.get('/settings', AuthMiddleware.isAuthenticated, (req,res)=> {
+   
+    res.render('settings.ejs',{ username: req.session.username, email: req.session.email });
 
+})
 
 app.post('/login', async (req, res) => {
     const {username, password} = req.body;
@@ -76,6 +81,7 @@ app.post('/login', async (req, res) => {
     }
     req.session.userId = user.id;
     req.session.username = user.username;
+    req.session.email = user.email;
     
     res.redirect('/')
 
@@ -177,6 +183,45 @@ app.delete('/history', AuthMiddleware.isAuthenticated, (req, res)=>{
 
 
 })
+
+app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
+    const {username, password, email} = req.body;
+    const users = userManager.readUser();
+    const user = users.find(user => user.id === req.session.userId)
+    if(!user){
+        return res.status(404).send('Such a user was not found');
+    }
+    if(username){
+        const userExist = users.find(user => user.username === username)
+        if(userExist){
+            return res.status(400).send('Username is already taken');
+        }
+        user.username = username;
+        req.session.username = username;
+    }
+    if(password){
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+        req.session.password = password
+    }
+    if(email){
+        user.email = email;
+        req.session.email = email;
+    }
+    userManager.writeUser(users);
+    
+    res.render('settings.ejs',{ 
+        username: req.session.username, 
+        email: req.session.email });
+    
+});
+
+
+
+
+
+
+
 
 app.listen(3000, () => {
     console.log('Server listening on port 3000');

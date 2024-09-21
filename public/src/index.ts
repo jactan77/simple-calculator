@@ -1,37 +1,32 @@
-(document.querySelector('#logout-link') as HTMLLIElement)?.addEventListener('click', async function(event: Event): Promise<void> {
-    event.preventDefault();
+async function fetchRequest(url:string, method:string, body?:any, href?: any):Promise<Response>{
     try {
-        const response = await fetch('/logout', {
-            method: 'POST',
+        const response = await fetch(url, {
+            method,
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-        });
-        if (response.ok) {
-            window.location.href = '/login';
-        } else {
-            throw new Error('Failed to log out');
+            body: body ? JSON.stringify(body) : null
+            
+        })
+        if(response.ok) {
+            if(href){
+                window.location.href = href;
+            
+            }
+            return response;
         }
-    } catch (error) {
-        console.error('Error during logout:', error);
+    } catch(error){
+        console.error(`Error with ${method} request to ${url}:`, error);
+        throw error;
     }
+}
+(document.querySelector('#menu-link') as HTMLLIElement)?.addEventListener('click', async (event: Event)=>{
+    event.preventDefault();
+    await fetchRequest('/',"GET",null, '/')
+    
 });
 
-(document.querySelector('#menu-link') as HTMLLIElement)?.addEventListener('click', async function(event: Event): Promise<void> {
+(document.querySelector('#logout-link') as HTMLLIElement)?.addEventListener('click', async (event: Event) => {
     event.preventDefault();
-    try {
-        const response = await fetch('/', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        if (response.ok) {
-            window.location.href = '/';
-        } else {
-            throw new Error('Failed to fetch menu');
-        }
-    } catch (error) {
-        console.error('Error during menu navigation:', error);
-    }
+    await fetchRequest('/logout', "POST", null, '/')
 });
