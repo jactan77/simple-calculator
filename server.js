@@ -3,16 +3,20 @@ const path = require('path');
 const http = require('http');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
-const UserManager = require('./utils/UserManager'); 
+
 const AuthMiddleware = require('./utils/AuthMiddleware');
 const { WebSocketServer } = require('ws');
 const { read } = require('fs');
+const { isPropertyAccessChain } = require('typescript');
+//Mongo config
+const mongoose = require('mongoose');
+const db = require('./config/keys').MongoURI
+const User = require('./models/User')
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({server})
 
-const userManager = new UserManager(path.join(__dirname, 'data', 'usersApi.json')); 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -28,6 +32,12 @@ app.use(
         cookie: { maxAge: 3600000 }, 
     })
 );
+
+mongoose.connect(db)
+   .then(() => console.log('MongoDB connected'))
+   .catch(err => console.error(err));
+
+
 wss.on('connection', (ws) => {
     console.log('WebSocket connection established');
 
@@ -67,23 +77,27 @@ app.get('/settings', AuthMiddleware.isAuthenticated, (req,res)=> {
 
 app.post('/login', async (req, res) => {
     const {username, password} = req.body;
-    const users = userManager.readUser()
 
-    // Find user
-    const user = users.find(user => user.username === username);
-    if(!user){
-        return res.status(404).send('Such a user was not found');
-    }
-    // check password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if(!isPasswordValid){
-        return res.status(400).send('Incorrect password');
-    }
+    try{
+      const user = await User.findOne({ username: username});
+      if(!user){
+        return res.status(401).send('Invalid credentials');
+      }
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if(!isPasswordValid){
+        return res.status(401).send('Invalid credentials');
+      }  
+        
     req.session.userId = user.id;
     req.session.username = user.username;
     req.session.email = user.email;
     
     res.redirect('/')
+    } catch (error) {
+        console.error(error)
+    }
+    
+    
 
 
     
@@ -95,24 +109,32 @@ app.get('/register', (req, res) => {
 
 app.post('/register', async (req, res) => {
     const {username, password, email} = req.body
-    const users  = userManager.readUser()
-    const userExist = users.find(user => user.username === username)
-    if(userExist){
-        return res.status(400).send('Username is already taken');
-    } 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        users.push({
+   try{
+    const existingUser = await User.findOne({ 
+        $or: [
+            { username: username }, 
+            { email: email }
+        ] 
+    })
+    if(existingUser){
+        return res.status(409).send('User already exists');
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user =  new User(({
             id: Date.now().toString(),
             username,
             password: hashedPassword,
             email,
             history: []
-        });
-        userManager.writeUser(users);
-        console.log(users)
+        })) 
+        await user.save();
+        console.log(user)
         res.redirect('/login');
-    
-
+   }catch(err){
+    console.error(err);
+    res.status(500).send('Server error');
+   } 
+   
 });
 app.get('/', AuthMiddleware.isAuthenticated, (req, res) => {
     res.render('index.ejs', { username: req.session.username });
@@ -129,12 +151,9 @@ app.post('/logout', (req, res) => {
     });
 });
 
-app.post('/history', AuthMiddleware.isAuthenticated, (req, res) => {
+app.post('/history', AuthMiddleware.isAuthenticated, async (req, res) => {
     const { operation, result, timestamp } = req.body;
-    const users = userManager.readUser(); 
-
-    
-    const user = users.find(user => user.id === req.session.userId);
+    const user =  await User.findOne({id: req.session.userId});
     if(!user){
         return res.status(404).send('Such a user was not found');
     }
@@ -145,36 +164,30 @@ app.post('/history', AuthMiddleware.isAuthenticated, (req, res) => {
     }
 
     user.history.push(historyEntry)
-    userManager.writeUser(users);
+    await user.save()
     
     wss.clients.forEach((client)=> {
         if(client.readyState === WebSocket.OPEN){
             client.send(JSON.stringify({type: 'new-history', data: historyEntry }))
         }
     })
-    
-    
-    
-    
     console.log(user)
     res.status(200).send('History updated successfully');
 });
-app.get('/history', AuthMiddleware.isAuthenticated,(req,res)=>{
-    const users = userManager.readUser();
-    const user = users.find(user => user.id === req.session.userId)
+app.get('/history', AuthMiddleware.isAuthenticated, async (req,res)=>{
+    const user = await User.findOne({id: req.session.userId});
     if(!user){
         return res.status(404).send('Such a user was not found');
     }
     res.status(200).json(user.history)
 })
-app.delete('/history', AuthMiddleware.isAuthenticated, (req, res)=>{
-    const users = userManager.readUser();
-    const user = users.find(user => user.id === req.session.userId)
+app.delete('/history', AuthMiddleware.isAuthenticated, async (req, res)=>{
+    const user = await User.findOne({id: req.session.userId})
     if(!user){
         return res.status(404).send('Such a user was not found');
     }
     user.history = [];
-    userManager.writeUser(users);
+    await user.save();
     wss.clients.forEach((client) =>{
         if(client.readyState === WebSocket.OPEN){
             client.send(JSON.stringify({type: 'clear-history'}))
@@ -185,14 +198,15 @@ app.delete('/history', AuthMiddleware.isAuthenticated, (req, res)=>{
 })
 
 app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
+   try{ 
     const {username, password, email} = req.body;
-    const users = userManager.readUser();
-    const user = users.find(user => user.id === req.session.userId)
+    const user = await User.findOne({id: req.session.userId})
+    
     if(!user){
         return res.status(404).send('Such a user was not found');
     }
-    if(username){
-        const userExist = users.find(user => user.username === username)
+    if(username && username !== user.username){
+        const userExist = await User.findOne({username:username})
         if(userExist){
             return res.status(400).send('Username is already taken');
         }
@@ -204,16 +218,23 @@ app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
         user.password = hashedPassword;
         req.session.password = password
     }
-    if(email){
+    if (email && email !== user.email) {
+        const emailExist = await User.findOne({ email: email });
+        if (emailExist) {
+            return res.status(400).send('Email is already taken');
+        }
         user.email = email;
-        req.session.email = email;
+        req.session.email = email;  
     }
-    userManager.writeUser(users);
+    await user.save();
     
     res.render('settings.ejs',{ 
         username: req.session.username, 
         email: req.session.email });
-    
+   } catch (err) {
+    console.error('Error updating settings:', error);
+        res.status(500).send('Internal server error');
+   }
 });
 
 
@@ -221,8 +242,8 @@ app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
 
 
 
+const port = process.env.PORT || 3000;
 
-
-app.listen(3000, () => {
+app.listen(port, () => {
     console.log('Server listening on port 3000');
 });

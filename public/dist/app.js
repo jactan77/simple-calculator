@@ -181,9 +181,9 @@ class Display extends CalculatorElements {
                 result: this.result.toString(),
                 timestamp: new Date().toISOString()
             };
+            this.addHisotryUI(history);
             try {
                 yield this.fetchRequest('/history', 'POST', history);
-                this.addHisotryUI(history);
                 this.sendMessage('new-history', history);
             }
             catch (error) {
@@ -228,6 +228,7 @@ class Display extends CalculatorElements {
     clearHistory() {
         return __awaiter(this, void 0, void 0, function* () {
             this.clearHistoryUI();
+            const response = yield this.fetchRequest('/history', 'DELETE');
         });
     }
     loadHistoryResults(timestamp) {

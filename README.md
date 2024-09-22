@@ -1,3 +1,4 @@
+
 # Simple Calculator Clone
 
 A basic calculator application that performs simple arithmetic operations like addition, subtraction, multiplication, and division. This project is a clone of the traditional calculator you might find on your desktop or mobile device.
@@ -18,6 +19,7 @@ A basic calculator application that performs simple arithmetic operations like a
 - **Dark Mode**: Switch between light and dark themes for a better user experience in different lighting conditions.
 - **History Display**: Keep track of past calculations and view them in a history panel.
 - **Local Storage**: Save and persist calculation history across sessions using local storage.
+- **Cloud Database Integration**: Store user calculation history in a cloud-based MongoDB database, ensuring that user data is secure and accessible across devices.
 
 ## Technologies Used
 
@@ -25,6 +27,7 @@ A basic calculator application that performs simple arithmetic operations like a
 - **Vanilla CSS**: For styling the application.
 - **TypeScript**: For implementing the calculator's functionality with type safety and modern JavaScript features.
 - **Node.js & Express**: For server-side API integration to handle user authentication and session management.
+- **MongoDB (Cloud)**: To store user data and calculation history securely in a cloud-based database.
 - **Fetch API**: To communicate with the server asynchronously for user data and history management.
 
 ## Installation
@@ -65,6 +68,7 @@ To run this calculator locally, follow these steps:
 4. View and interact with past calculations in the history display panel.
 5. Calculations and history are saved to the server and will persist across user sessions.
 6. Authenticate through the API to enable personalized calculation history management.
+7. User calculation history is stored securely in MongoDB, ensuring it is accessible across sessions and devices.
 
 ## Contributing
 
@@ -88,6 +92,7 @@ All notable changes to this project will be documented in this section.
 - Added history calculation display to track and view past calculations.
 - Integrated local storage to persist calculation history across sessions.
 - **API Integration:** Added a Node.js and Express-based API for user authentication, enabling personal calculator sessions. Users can log in and have their calculation history saved to their accounts on the server.
+- **Cloud Database (MongoDB) Integration:** Implemented MongoDB as a cloud-based storage solution, providing secure, scalable, and persistent storage for user data and calculation history. This allows users to access their data across different devices and sessions.
 - **Security:** Removed the use of the `eval()` method for improved security.
 - Rewrote the code in TypeScript for better code quality and maintainability.
 
@@ -96,9 +101,8 @@ All notable changes to this project will be documented in this section.
 - **Scientific Calculator Features:** Extend the calculator with functionalities such as trigonometric operations, logarithms, and exponentiation.
 - **Memory Function:** Introduce memory buttons (M+, M-, MR, MC) to store and recall values.
 - **Improved UI/UX:** Enhance the user interface for a more intuitive and visually appealing experience.
-- **Database Integration:** Implement MongoDB as a cloud-based storage solution, providing secure, scalable, and persistent storage for user data and calculation history.
 - **Enhanced API Capabilities:** Expand API functionality to support advanced user profile management and multi-device synchronization of calculator history.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

@@ -201,11 +201,11 @@ updateDisplay(buttonValue:string):void {
             result: this.result.toString(),
             timestamp: new Date().toISOString()
         }
-        
+        this.addHisotryUI(history); 
        try {
-          await this.fetchRequest('/history', 'POST', history)
-          this.addHisotryUI(history); 
-          this.sendMessage('new-history', history);
+           
+            await this.fetchRequest('/history', 'POST', history)
+            this.sendMessage('new-history', history);
         } catch (error){
             console.error('Error adding history:', error);
         }
@@ -247,8 +247,8 @@ updateDisplay(buttonValue:string):void {
 
 
     async clearHistory(): Promise <void> {
-            this.clearHistoryUI();
-
+        this.clearHistoryUI();
+        const response = await this.fetchRequest('/history', 'DELETE')
       
                   
         }
