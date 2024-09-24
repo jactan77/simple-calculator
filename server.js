@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const http = require('http');
@@ -10,7 +11,7 @@ const { read } = require('fs');
 const { isPropertyAccessChain } = require('typescript');
 //Mongo config
 const mongoose = require('mongoose');
-const db = require('./config/keys').MongoURI
+const db = process.env.MONGO_URI
 const User = require('./models/User')
 
 const app = express();
@@ -35,6 +36,7 @@ app.use(
 
 mongoose.connect(db)
    .then(() => console.log('MongoDB connected'))
+
    .catch(err => console.error(err));
 
 
@@ -199,7 +201,7 @@ app.delete('/history', AuthMiddleware.isAuthenticated, async (req, res)=>{
 
 app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
    try{ 
-    const {username, password, email} = req.body;
+    const {username, password, email, confirmPassword} = req.body;
     const user = await User.findOne({id: req.session.userId})
     
     if(!user){
@@ -214,9 +216,13 @@ app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
         req.session.username = username;
     }
     if(password){
+    if(password === confirmPassword){    
         const hashedPassword = await bcrypt.hash(password, 10);
         user.password = hashedPassword;
         req.session.password = password
+    } else{
+        return res.status(400).send('Passwords do not match');
+    }
     }
     if (email && email !== user.email) {
         const emailExist = await User.findOne({ email: email });
@@ -232,7 +238,7 @@ app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
         username: req.session.username, 
         email: req.session.email });
    } catch (err) {
-    console.error('Error updating settings:', error);
+    console.error('Error updating settings:', err);
         res.status(500).send('Internal server error');
    }
 });
