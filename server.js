@@ -65,7 +65,7 @@ app.get('/calculator', AuthMiddleware.isAuthenticated, (req, res) => {
 
 
 app.get('/',AuthMiddleware.isAuthenticated,(req, res) => {
-    res.render('index.ejs',{ username: req.session.username });
+    res.render('index.ejs',{ username: req.session.username, isAdmin: req.session.isAdmin});
 });
 
 app.get('/login', (req, res) => {
@@ -73,7 +73,7 @@ app.get('/login', (req, res) => {
 });
 app.get('/settings', AuthMiddleware.isAuthenticated, (req,res)=> {
    
-    res.render('settings.ejs',{ username: req.session.username, email: req.session.email });
+    res.render('settings.ejs',{ username: req.session.username, email: req.session.email});
 
 })
 
@@ -93,7 +93,7 @@ app.post('/login', async (req, res) => {
     req.session.userId = user.id;
     req.session.username = user.username;
     req.session.email = user.email;
-    
+    req.session.isAdmin = user.isAdmin;
     res.redirect('/')
     } catch (error) {
         console.error(error)
@@ -127,7 +127,8 @@ app.post('/register', async (req, res) => {
             username,
             password: hashedPassword,
             email,
-            history: []
+            history: [],
+            
         })) 
         await user.save();
         console.log(user)
@@ -242,6 +243,22 @@ app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
         res.status(500).send('Internal server error');
    }
 });
+
+
+
+
+
+
+
+app.get('/settings/admin', AuthMiddleware.isAuthenticatedAdmin, (req, res) => {
+    res.render('adminPanel.ejs',{
+        username: req.session.username,
+        isAdmin: req.session.isAdmin
+    })
+})
+
+
+
 
 
 

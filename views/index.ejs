@@ -21,6 +21,14 @@
         <form action="/settings" method="GET">
             <button type="submit" class='btn'>Settings</button>
         </form>
+        
+        <% if (isAdmin === true) { %>
+            <form action="/settings/admin" method="GET" class="adminPanel" style="visibility: visible;">
+                <button type="submit" class='btn'>Admin Panel</button>
+            </form>
+          <% } %>
+            
+          
     </div>
 </body>
 </html>

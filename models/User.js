@@ -34,7 +34,12 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    history:[historySchema]
+    history:[historySchema],
+    
+    isAdmin:{
+        type:Boolean,
+        default: false
+    }
 
 })
 const User = mongoose.model('User', UserSchema)
