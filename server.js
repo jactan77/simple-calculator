@@ -23,7 +23,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public/admin-panel')));
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.use(
     session({
@@ -46,7 +48,7 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         console.log('Received:', message);
 
-        // Broadcast message to all connected clients
+        
         wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(message);
@@ -59,7 +61,7 @@ wss.on('connection', (ws) => {
     });
 });
 app.get('/calculator', AuthMiddleware.isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index1.html'));
+    res.sendFile(path.join(__dirname, 'public','index1.html' ));
 });
 
 
@@ -250,12 +252,10 @@ app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
 
 
 
-app.get('/settings/admin', AuthMiddleware.isAuthenticatedAdmin, (req, res) => {
-    res.render('adminPanel.ejs',{
-        username: req.session.username,
-        isAdmin: req.session.isAdmin
-    })
-})
+app.get('/admin-dashboard', AuthMiddleware.isAuthenticatedAdmin, AuthMiddleware.isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/admin-panel','indexPanel.html' ))
+    
+});
 
 
 
