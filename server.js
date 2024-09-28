@@ -252,9 +252,22 @@ app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
 
 
 
-app.get('/admin-dashboard', AuthMiddleware.isAuthenticatedAdmin, AuthMiddleware.isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/admin-panel','indexPanel.html' ))
+app.get('/admin-dashboard', AuthMiddleware.isAuthenticatedAdmin, AuthMiddleware.isAuthenticated, async (req, res) => {
     
+    res.sendFile(path.join(__dirname, 'public/admin-panel','indexPanel.html' ))
+
+});
+
+app.get('/admin-dashboard/get-users', AuthMiddleware.isAuthenticatedAdmin, async (req, res) => {
+try {
+
+    const users = await User.find({});
+    res.status(200).json(users);
+} 
+catch(error){
+    console.error(error);
+    res.status(500).send('Server error');
+}
 });
 
 
