@@ -31,12 +31,19 @@ document.addEventListener('DOMContentLoaded',()=>{
     try{
     const getUsers = async () => {
         const users = await fetchRequest<User[]>('/admin-dashboard/get-users', 'GET')
+        const user = await fetchRequest<User>('/admin-dashboard/get-user', 'GET')
         const userCountElement: HTMLElement = document.querySelector('#userCount');
-        if(userCountElement){
+        const userProfile: HTMLElement = document.querySelector('.user-profile"')
+
+        if(userCountElement && userProfile){
             userCountElement.textContent =  users.length.toString() 
+            const wrapper: HTMLSpanElement =  document.createElement('span')
+            wrapper.textContent = `${user.username}`
+            userProfile.appendChild(wrapper)
         }
 
     }
+    
     getUsers()
 }catch(error){
     console.error('Error fetching users:', error);
