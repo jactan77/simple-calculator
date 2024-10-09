@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            
+                
+                <li><a id="logout-link">Logout</a></li>
+                <li><a id="menu-link">Menu</a></li>
+                
+                
+                
+        </ul>
+    </nav>
+    <div class="sidebar">
+        <div class="logo"> 
+            <h2>Vsight</h2>
+        </div>
+        <nav class="nav">
+            <ul>
+                <li><a href="#" class="active">Dashboard</a></li>
+                <li><a href="#">Rooms</a></li>
+                <li><a href="#">Users</a></li>
+                <li><a href="#">Sessions</a></li>
+             
+            </ul>
+        </nav>
+    </div>
+
+    
+    <div class="main-content">
+        <div class="top-bar">
+            
+            <div class="user-profile">
+                
+            </div>
+        </div>
+
+        <div class="cards">
+            <div class="card red">
+                <h3 id = 'userCount'></h3>
+                <p>Users</p>
+                <button>Show Users</button>
+            </div>
+          
+            <div class="card yellow">
+                <h3></h3>
+                <p>Sessions</p>
+                <button>Show Sessions</button>
+            </div>
+            <div class="card blue">
+                <h3></h3>
+                <p>Session Time</p>
+                <button>Show Sessions</button>
+            </div>
+        </div>
+
+        <div class="chart">
+            <h4></h4>
+            <div id="chart-container">
+                <canvas id="sessionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('sessionChart').getContext('2d');
+        const sessionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Nov 21', 'Nov 22', 'Nov 23', 'Nov 24', 'Nov 25', 'Nov 26', 'Nov 27', 'Nov 28', 'Nov 29', 'Nov 30', 'Dec 01', 'Dec 02'],
+                datasets: [{
+                    label: 'Sessions',
+                    data: [1, 2, 3, 4, 5, 3, 2, 1, 4, 5, 3, 4],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    <script type="module" src='dist/admin.js'></script>
+    <script src="dist/index.js"></script>
+</body>
+</html>

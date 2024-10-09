@@ -350,4 +350,5 @@ darkbutton.onclick = () => {
         button.classList.toggle("d4");
     });
     icon.classList.toggle('bxs-sun');
+    
 };

@@ -12,18 +12,21 @@ const { isPropertyAccessChain } = require('typescript');
 //Mongo config
 const mongoose = require('mongoose');
 const db = process.env.MONGO_URI
-const User = require('./models/User')
+const User = require('./models/User');
+const { error } = require('console');
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({server})
 
+const bodyParser = require("body-parser"); 
+app.use(bodyParser.json());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public/admin-panel')));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -254,7 +257,7 @@ app.post('/settings', AuthMiddleware.isAuthenticated, async(req, res)=> {
 
 app.get('/admin-dashboard', AuthMiddleware.isAuthenticatedAdmin, AuthMiddleware.isAuthenticated, async (req, res) => {
     
-    res.sendFile(path.join(__dirname, 'public/admin-panel','indexPanel.html' ))
+    res.sendFile(path.join(__dirname, 'public','indexPanel.html' ))
 
 });
 
@@ -270,8 +273,23 @@ catch(error){
 }
 });
 
+app.get('/admin-dashboard/get-user', AuthMiddleware.isAuthenticated, async (req,res)=>{
+  try{  
+    const user = await User.findOne({id: req.session.userId})
+    if(!user){
+        res.status(500).send('Error')
+    }
+    res.status(200).json(user)
+} catch(error){
+    console.error(error)
+}
 
+})
 
+app.get('/admin-dashboard/users', AuthMiddleware.isAuthenticatedAdmin, async (req,res)=>{
+        res.sendFile(path.join(__dirname, 'public','indexUsers.html'))
+
+});
 
 
 

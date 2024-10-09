@@ -14,7 +14,40 @@ body {
     margin: 0;
     overflow: hidden;
 }
+.navbar {
+    width: 100%;
+    background-color: #4c4f8f; 
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
 
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+}
+
+.navbar ul li {
+    display: inline;
+}
+
+.navbar ul li a {
+    display: block;
+    color: #ffffff; 
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.navbar ul li a:hover {
+    background-color: #6e8efb; 
+}
 .container {
     width: 100%;
     height: 100%;
